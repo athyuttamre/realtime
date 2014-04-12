@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Room {{roomName}}</title>
+	<meta name='description' content='Chatroom - Connecting people since 1764'>
+	<meta name='keywords' content='Chatroom, CS132, Athyuttam Eleti, Brown University'>
+	<meta name='author' content='Athyuttam Reddy Eleti'>
+	<meta charset='utf-8'>
+	<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+
+	<!--Meta Tag Information-->
+	<meta name='roomName' content='{{roomName}}'>
+	<meta name='nickname' content='Miley'>
+
+	<!--CSS Reset-->
+	<link rel='stylesheet' type='text/css' href='/css/reset.css'>
+	<!--Custom CSS-->
+	<link rel='stylesheet' type='text/css' href='/css/room.css'>
+	<!--Viewport Scaling-->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<!--Javascript-->
+	<script type='text/javascript' src='/js/jquery-1.11.0.js'></script>
+	<script type='text/javascript' src='/js/room.js'></script>
+</head>
+<body>
+	<div id='container_wrapper'>
+		<div id='container'>
+			<header>
+				<h1>Room {{roomName}}</h1>
+			</header>
+			<ul id='messagesContainer'></ul>
+			<form id='messageForm' action='/{{roomName}}/messages' method='post'>
+				<input type='text' id='messageField' name='message' size='30' autocomplete='off' placeholder='Enter your message here...'/>
+				<button id='postMessageButton' type='submit'>&#x21b5;</button>
+			</form>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,215 @@
+body {
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+	font-weight: 300;
+	background-color: white;
+}
+
+#whitebox {
+	z-index: 9999;
+	height: 100%;
+	width: 100%;
+	background: rgba(255, 255, 255, 0.9);
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	color: black;
+}
+
+#nicknameContainer {
+	width: 600px;
+	margin: auto;
+	margin-top: 8em;
+	color: black;
+	text-align: center;
+}
+
+#welcome {
+	margin: 1em auto;
+	font-size: 2em;
+}
+
+#pickNickname {
+	font-size: 1.5em;
+}
+
+#nicknameInput {
+	height: 2em;
+	font-family: inherit;
+	font-size: 2em;
+	width: 300px;
+	border-bottom: 1px solid black;
+	margin-top: 1em;
+}
+
+#container_wrapper {
+	width: 600px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+}
+
+#container {
+	width: 600px;
+	height: 100%;
+	margin: auto;
+	text-align: center;
+	background-color: white;
+	border-left: 1px solid rgb(228, 232, 235);
+	border-right: 1px solid rgb(228, 232, 235);
+	position: relative;
+	left: -50%;
+
+	display: none;
+
+	box-shadow: 0 9px 0px 0px white, 0 -9px 0px 0px white, 6px 0 8px -2px rgba(228, 232, 235, 0.3), -6px 0 8px -2px rgba(228, 232, 235, 0.3);
+}
+
+header {
+	width: 100%;
+	height: 80px;
+	position: absolute;
+	top: 0;
+	color: white;
+
+	/*Background*/
+	background: #152678; /* Old browsers */
+	background: -moz-linear-gradient(-45deg, #152678 0%, #1870a4 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#152678), color-stop(100%,#1870a4)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(-45deg, #152678 0%,#1870a4 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(-45deg, #152678 0%,#1870a4 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(-45deg, #152678 0%,#1870a4 100%); /* IE10+ */
+	background: linear-gradient(135deg, #152678 0%,#1870a4 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#152678', endColorstr='#1870a4',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+h1 {
+	font-size: 1.5em;
+	font-weight: 400;
+	position: absolute;
+	line-height: 80px;
+	left: 1em;
+	color: white;
+	transition: 0.25s;
+}
+
+h1:hover {
+	cursor: pointer;
+	color: white;
+}
+
+#messagesContainer {
+	width: 100%;
+	position: absolute;
+	top: 80px;
+	bottom: 50px;
+	overflow: scroll;
+	font-family: inherit;
+}
+
+.message {
+	width: 600px;
+	border-bottom: 1px solid rgb(228, 232, 235);
+	min-height: 40px;
+	text-align: left;
+	line-height: 1.2em;
+}
+
+.nickname {
+	padding: 10px;
+	display: inline-block;
+	text-align: left;
+	color: #152678;
+}
+
+.body {
+	vertical-align: top;
+	min-width: 390px;
+	max-width: 410px;
+	padding: 10px;
+	display: inline-block;
+	text-align: left;
+	text-align: top;
+}
+
+.time {
+	float: right;
+	vertical-align: top;
+	width: 70px;
+	padding: 10px;
+	display: inline-block;
+	text-align: right;
+}
+
+.author {
+	background-color: rgb(245, 248, 250);
+}
+
+#messageForm {
+	width: 100%;
+	height: 50px;
+	position: absolute;
+	bottom: 0;
+	text-align: left;
+}
+
+textarea:focus, input:focus {
+	outline: 0;
+}
+
+input, input:focus, button, button:focus {
+	display: inline-block;
+	height: 100%;
+	border: 0;
+	padding: 0;
+	border: none;
+	padding: none;
+	margin: 0;
+	box-shadow: none;
+	outline: 0;
+}
+
+#messageField {
+	width: 479px;
+	background-color: white;
+	height: 39px;
+	padding: 5px 40px 5px 20px;
+	font-size: 1em;
+
+	border-top: 1px solid rgb(228, 232, 235);
+	border-right: 1px solid rgb(228, 232, 235);
+	font-family: inherit;
+
+	position: absolute;
+	left: 0;
+	bottom: 0;
+}
+
+#postMessageButton {
+	font-family: inherit;
+	font-size: 1.25em;
+	line-height: 50px;
+	color: #1870a4;
+
+	position: absolute;
+	right: 0;
+	bottom: 0;
+
+	border: none;
+	border: 0;
+	padding: 0;
+
+	width: 60px;
+	height: 50px;
+
+	background-color: white;
+	border-top: 1px solid rgb(228, 232, 235);
+	transition: 0.25s;
+}
+
+#postMessageButton:hover {
+	cursor: pointer;
+	color: #152678;
+}
