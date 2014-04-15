@@ -1,7 +1,13 @@
 // Initializing Server
+var http = require('http');
 var express = require('express');
 var app = express();
+var server = http.createServer(app);
 var path = require('path'); // Using path module to easily serve static files and favicon
+
+// Add socket.io
+var io = require('socket.io').listen(server);
+io.set('log level', 1); // Reduce logging (number of debug messages)
 
 // Setting up Templating Engine
 var engines = require('consolidate');
@@ -32,73 +38,6 @@ app.get('/:roomName', function(request, response) {
 	// Return chatroom HTML...
 });
 
-// POST request for Messages
-app.post('/:roomName/messages', function(request, response) {
-	var name = request.params.roomName;		// 'ABC123'
-	var nickname = request.body.nickname;	// 'Miley'
-	var message = request.body.message;		// 'I came in like a Wrecking Ballll!'
-	var time = request.body.time;		// Milliseconds since 1970
-
-	console.log('POST request for message from room ' + name);
-	console.log('Nickname: ' + nickname + ' Message: ' + message + ' Time: ' + time);
-
-	// POST to database...
-	var q = conn.query('INSERT INTO messages (room, nickname, body, time) VALUES ($1, $2, $3, $4)', [name, nickname, message, time]);
-	q.on('error', console.error);
-
-	// Respond to client; if no response is recorded, browser retries request after 2 minutes, causing duplicate messages
-	response.end('Message added to database.');
-});	
-
-// GET request for Messages
-app.get('/:roomName/messages.json', function(request, response) {
-	console.log('Client asking for messages.');
-	// Fetch all of the messages for this room from TABLE messages
-	var roomName = request.params.roomName;
-	var messages = [];
-
-	console.log('Retrieving message list for room ' + roomName);
-	var q = conn.query('SELECT * FROM messages WHERE room=\'' + roomName + '\'');
-	q.on('row', function(row) {
-		var rowID = row.id;
-		var rowNickname = row.nickname;
-		var rowBody = row.body;
-		var rowTime = new Date(row.time);
-
-		var convertedTime = '';
-		var hours = rowTime.getHours();
-		var minutes = rowTime.getMinutes();
-
-		if (minutes < 9) {
-			minutes = '0' + minutes;
-		}
-
-		if(hours >= 12) {
-			if(hours > 12) {
-				hours = hours % 12;
-			}
-			convertedTime = hours + ':' + minutes + ' PM';
-		}
-		else {
-			convertedTime = hours + ':' + minutes + ' AM';
-		}
-
-		var message = {
-			id: rowID,
-			nickname: rowNickname,
-			body: rowBody,
-			time: convertedTime
-		}
-		messages.push(message);
-	});
-	q.on('end', function() {
-		console.log('Message list retrieved');
-		console.log('Sending messages');
-		// Encode the messages object as JSON and send it back
-		response.json(messages);
-	});
-});
-
 // POST request for new Chatroom
 app.post('/', function(request, response) {
 	console.log('POST request for new chatroom');
@@ -119,19 +58,130 @@ app.get('/', function(request, response) {
 	response.render('index.html');
 });
 
-// Live Server
-app.listen(8080, function(error, response) {
-	if(error) {
-		console.log('Error: ' + error);
-	}
-	else {
-		console.log('Server listening on Port ' + this.address().port);
-	}
+server.listen(8080, function() {
+	console.log('Server listneing on Port ' + this.address().port);
 });
 
 /// SOCKET CODE //////////////////////////////////////////////////////////
 
+io.sockets.on('connection', function(socket) {
+	// Client joined new room
+    socket.on('join', function(roomName, nickname, callback) {
+        socket.join(roomName); // this is a socket.io method
+        socket.roomName = roomName;
+        socket.nickname = nickname;
+
+        console.log('Client ' + nickname + ' joined Room ' + roomName);
+
+        // Get a list of messages currently in the room, then send it back
+        var messages = getMessages(roomName, callback);
+        broadcastMembership(roomName);
+    });
+
+    // Client changed nickname
+    socket.on('nickname', function(nickname) {
+    	console.log('Nickname changed from ' + socket.nickname + ' to ' + nickname);
+        socket.nickname = nickname;
+        broadcastMembership(roomName);
+    });
+
+    // Client sent a new message
+    socket.on('message', function(message, time) {
+        // Process an incoming messages
+        var roomName = socket.roomName;
+        var nickname = socket.nickname;
+
+        console.log('New message to room ' + roomName);
+		console.log('Nickname: ' + nickname + ' Message: ' + message + ' Time: ' + time);
+
+		// POST to database
+		var q = conn.query('INSERT INTO messages (room, nickname, body, time) VALUES ($1, $2, $3, $4)', [roomName, nickname, message, time]);
+		q.on('error', console.error);
+
+		// Broadcast new message
+		io.sockets.in(roomName).emit('message', nickname, message, convertTime(time));
+    });
+
+    // Client disconnected / closed their browser window
+    socket.on('disconnect', function() {
+    	console.log(socket.nickname + ' left Room ' + socket.roomName);
+        broadcastMembership(socket.roomName);
+    });
+});
+
 /// SUPPORT CODE /////////////////////////////////////////////////////////
+
+// Sends latest messages to client
+function getMessages(requestedRoomName, callback) {
+	console.log('Client asking for messages.');
+
+	// Fetch all of the messages for this room from TABLE messages
+	var roomName = requestedRoomName;
+	var messages = [];
+
+	console.log('Retrieving message list for room ' + roomName);
+	var q = conn.query('SELECT * FROM messages WHERE room=\'' + roomName + '\'');
+
+	q.on('row', function(row) {
+		var rowID = row.id;
+		var rowNickname = row.nickname;
+		var rowBody = row.body;
+		var convertedTime = convertTime(row.time);
+
+		var message = {
+			id: rowID,
+			nickname: rowNickname,
+			body: rowBody,
+			time: convertedTime
+		}
+		messages.push(message);
+	});
+
+	q.on('end', function() {
+		console.log('Message list retrieved');
+
+		// Encode the messages object as JSON and send it back to client
+		console.log('Retrieved messages from database: ' + messages);
+		console.log('Sending messages');
+		callback(JSON.stringify(messages));
+	});
+}
+
+function broadcastMembership(roomName) {
+	console.log('Broadcasting membership for Room ' + roomName);
+	var sockets = io.sockets.clients(roomName);
+
+	var nicknames = sockets.map(function(socket) {
+		return socket.nickname;
+	});
+
+	console.log('Active Members: ' + nicknames);
+	io.sockets.in(roomName).emit('membershipChanged', nicknames);
+}
+
+function convertTime(millisecondsTime) {
+	var givenTime = new Date(millisecondsTime);
+
+	var convertedTime = '';
+	var hours = givenTime.getHours();
+	var minutes = givenTime.getMinutes();
+
+	if (minutes < 9) {
+		minutes = '0' + minutes;
+	}
+
+	if(hours >= 12) {
+		if(hours > 12) {
+			hours = hours % 12;
+		}
+		convertedTime = hours + ':' + minutes + ' PM';
+	}
+	else {
+		convertedTime = hours + ':' + minutes + ' AM';
+	}
+
+	return convertedTime;
+}
 
 function generateRoomIdentifier() {
 	// Make a list of legal characters

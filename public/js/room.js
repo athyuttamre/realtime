@@ -1,7 +1,11 @@
+var socket = io.connect();
+
+var room = meta('roomName');
+var nickname = '';
 var messagesIDs = [];
 
 $(document).ready(function() {
-	var room = meta('roomName');
+
 	$('body').prepend("<div id='whitebox' style='display: none'><div id='nicknameContainer'>"
 		+ "<div id='welcome'>Welcome to Room " + room + "!</div>"
 		+ "<div id='pickNickname'>Pick a Nickname</div>"
@@ -12,9 +16,26 @@ $(document).ready(function() {
 
 	$('#nicknamePicker').submit(function(e) {
 		e.preventDefault();
-		$('meta[name=nickname]').attr('content', $('#nicknameInput').val());
+		nickname = $('#nicknameInput').val();
 		moveToChat();
 	})
+
+	// Handle incoming messages
+    socket.on('message', function(nickname, message, time){
+        // display a newly-arrived message
+        addNewMessage(nickname, message, time);
+    });
+
+    // Handle room membership changes
+    socket.on('membershipChanged', function(members){
+        // display the new member list
+        $('#members-list').empty();
+        for(var i = 0; i < members.length; i++) {
+        	if(members[i] != null) {
+        		$('#members-list').append('<li>' + members[i] + '</li>');
+        	}
+        }
+    });
 });
 
 function moveToChat() {
@@ -23,15 +44,14 @@ function moveToChat() {
 	});
 	$('#container').show();
 	$('#messageField').focus();
-	refreshMessages();
-	intervalID = setInterval(refreshMessages, 500);
+
+	console.log('Joining Room ' + room);
+	socket.emit('join', meta('roomName'), nickname, function(messages) {
+		addMessages(messages);
+	})
 
 	var messageForm = document.getElementById('messageForm');
-	messageForm.addEventListener('submit', messageHandler, false);
-}
-
-function refreshMessages() {
-	request('GET', '/' + meta('roomName') + '/messages.json', null, addMessages, 'Messages could not be loaded.');
+	messageForm.addEventListener('submit', sendNewMessage, false);
 }
 
 function addMessages(response) {
@@ -40,7 +60,7 @@ function addMessages(response) {
 	for(var i = 0; i < messagesData.length; i++) {
 		var current = messagesData[i];
 		var id = current.id;
-		var nickname = current.nickname;
+		var nm = current.nickname;
 		var body = current.body;
 		var time = current.time;
 
@@ -49,58 +69,44 @@ function addMessages(response) {
 		}
 		else {
 			messagesIDs.push(id);
-			addNewMessage(nickname, body, time);
+			addNewMessage(nm, body, time);
 			$("#messagesContainer").animate({ scrollTop: $("#messagesContainer")[0].scrollHeight}, 0);
 		}
 	}
 }
 
-function messageHandler(e) {
+function sendNewMessage(e) {
 	// Preventing the page from redirecting
 	e.preventDefault();
 
-	// Create a new FormData object from our form
-	var fd = new FormData(document.getElementById('messageForm'));
-	fd.append('nickname', meta('nickname'));
-	fd.append('time', (new Date()).getTime());
+	// Get message data
+	var message = $('#messageField').val();
+	var time = (new Date()).getTime();
 
+	// If empty message, do nothing
 	if($('#messageField').val() == '') {
 		return;
 	}
 
+	// Reset message field
 	$('#messageField').val('');
+
 	// Send it to the server
-	request('POST', '/' + meta('roomName') + '/messages', fd, messagePosted, 'Message could not be posted!');
+	console.log('Emitting message: ' + message + ' ' + time);
+	socket.emit('message', message, time);
 }
 
-function messagePosted(response) {
-	;
+function changeNickname(newNickname) {
+	socket.emit('nickname', newNickname);
 }
 
-function request(type, url, body, callback, message) {
-	var req = new XMLHttpRequest();
-	req.open(type, url, true);
-
-	req.addEventListener('load', function(e) {
-		if(req.status == 200) {
-			var content = req.responseText;
-			callback(content);
-		}
-		else {
-			alert(message);
-		}
-	});
-
-	req.send(body);
-}
-
-function addNewMessage(nickname, body, time) {
+function addNewMessage(nm, body, time) {
 	var ul = $('#messagesContainer');
 	var liClass = 'message';
-	if(nickname == meta('nickname')) {
+	if(nm == nickname) {
 		liClass += ' author';
 	}
-	var li = "<li class='" + liClass + "'><div class='nickname'>" + nickname + "</div><div class='body'>" + body + "</div><div class='time'>" + time + "</div></li>";
+	var li = "<li class='" + liClass + "'><div class='nickname'>" + nm + "</div><div class='body'>" + body + "</div><div class='time'>" + time + "</div></li>";
 	ul.append(li);
 }
 

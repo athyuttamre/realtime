@@ -10,7 +10,6 @@
 
 	<!--Meta Tag Information-->
 	<meta name='roomName' content='{{roomName}}'>
-	<meta name='nickname' content='Miley'>
 
 	<!--CSS Reset-->
 	<link rel='stylesheet' type='text/css' href='/css/reset.css'>
@@ -21,6 +20,7 @@
 
 	<!--Javascript-->
 	<script type='text/javascript' src='/js/jquery-1.11.0.js'></script>
+	<script type='text/javascript' src="/socket.io/socket.io.js"></script>
 	<script type='text/javascript' src='/js/room.js'></script>
 </head>
 <body>
@@ -34,6 +34,10 @@
 				<input type='text' id='messageField' name='message' size='30' autocomplete='off' placeholder='Enter your message here...'/>
 				<button id='postMessageButton' type='submit'>&#x21b5;</button>
 			</form>
+		</div>
+		<div id='active-members'>
+			<h2>Active Members</h2>
+			<ul id='members-list'></ul>
 		</div>
 	</div>
 </body>
