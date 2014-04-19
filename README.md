@@ -5,7 +5,7 @@ A revolutionary new chatting experience.
 
 ##Workflow
 
-To start running Realtime, cd into it's root directory, and run 'node server.js'. This creates a database 'chatroom.db', and runs Realtime on 'http://localhost:8080/'. If a database already exists, please delete it before running Realtime using the command 'rm chatroom.db'.
+To start running Realtime, cd into it's root directory, and first run 'npm install' to install all the dependencies. Next, if the file chatroom.db already exists, delete it by running the command 'rm chatroom.db'. Finally, run 'node server.js' to run Realtime. Open a browser and navigate to http://localhost:8080/ to use Realtime.
 
 ##Features
 
