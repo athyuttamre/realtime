@@ -58,7 +58,7 @@ app.get('/', function(request, response) {
 });
 
 server.listen(8080, function() {
-	console.log('Server listneing on Port ' + this.address().port);
+	console.log('Server listening on Port ' + this.address().port);
 });
 
 /// SOCKET CODE //////////////////////////////////////////////////////////
