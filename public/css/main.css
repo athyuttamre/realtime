@@ -5,16 +5,15 @@ html {
 body {
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
 	font-weight: 300;
-	
 	color: white;
 }
 
 #container {
 	height: 100%;
+	min-width: 600px;
 	width: 100%;
 	margin: auto;
 
-	position: absolute;
 	top: 0;
 	bottom: 0;
 
@@ -34,7 +33,9 @@ body {
 	width: 600px;
 	margin: auto;
 	text-align: center;
-	margin-top: 70px;
+
+	padding-top: 70px;
+	padding-bottom: 70px;
 }
 
 h1 {

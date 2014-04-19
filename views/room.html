@@ -15,8 +15,6 @@
 	<link rel='stylesheet' type='text/css' href='/css/reset.css'>
 	<!--Custom CSS-->
 	<link rel='stylesheet' type='text/css' href='/css/room.css'>
-	<!--Viewport Scaling-->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<!--Javascript-->
 	<script type='text/javascript' src='/js/jquery-1.11.0.js'></script>
@@ -28,16 +26,18 @@
 		<div id='container'>
 			<header>
 				<h1>Room {{roomName}}</h1>
+				<p id="changeNickname">Change Nickname</p>
 			</header>
-			<ul id='messagesContainer'></ul>
+			<div id="active-members">No active members.</div>
+			<ul id='messagesContainer'>
+				<div id='typing-members-container'>
+					<p id="typing-members"></p>
+				</div>
+			</ul>
 			<form id='messageForm' action='/{{roomName}}/messages' method='post'>
 				<input type='text' id='messageField' name='message' size='30' autocomplete='off' placeholder='Enter your message here...'/>
 				<button id='postMessageButton' type='submit'>&#x21b5;</button>
 			</form>
-		</div>
-		<div id='active-members'>
-			<h2>Active Members</h2>
-			<ul id='members-list'></ul>
 		</div>
 	</div>
 </body>

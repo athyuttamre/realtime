@@ -4,7 +4,7 @@ body {
 	background-color: white;
 }
 
-#whitebox {
+.whitebox {
 	z-index: 9999;
 	height: 100%;
 	width: 100%;
@@ -17,7 +17,7 @@ body {
 	color: black;
 }
 
-#nicknameContainer {
+.nicknameContainer {
 	width: 600px;
 	margin: auto;
 	margin-top: 8em;
@@ -25,22 +25,25 @@ body {
 	text-align: center;
 }
 
-#welcome {
+.welcome {
 	margin: 1em auto;
 	font-size: 2em;
 }
 
-#pickNickname {
+.pickNickname {
 	font-size: 1.5em;
+	width: 300px;
+	margin: auto;
 }
 
-#nicknameInput {
+.nicknameInput, .nicknameInput:focus {
 	height: 2em;
 	font-family: inherit;
 	font-size: 2em;
 	width: 300px;
 	border-bottom: 1px solid black;
 	margin-top: 1em;
+	background-color: rgba(255, 255, 255, 0.8);
 }
 
 #container_wrapper {
@@ -95,15 +98,57 @@ h1 {
 	transition: 0.25s;
 }
 
-h1:hover {
-	cursor: pointer;
+#changeNickname {
+	font-weight: 400;
+	position: absolute;
+	line-height: 80px;
+	right: 1.5em;
 	color: white;
+	opacity: 0.8;
+	transition: 0.25s;
+}
+
+#changeNickname:hover {
+	opacity: 1.0;
+	cursor: pointer;
+}
+
+#active-members {
+	height: 40px;
+	width: 100%;
+	position: absolute;
+	top: 80px;
+	border-bottom: 1px solid green;
+	background-color: #fafafa;
+}
+
+#active-members > p {
+	text-align: left;
+	line-height: 1.2em;
+	vertical-align: middle;
+	padding: 10px;
+	color: green;
+}
+
+#typing-members-container {
+	height: 30px;
+	width: 100%;
+}
+
+#typing-members {
+	text-align: left;
+	line-height: 30px;
+	font-size: 0.6em;
+	vertical-align: text-bottom;
+	padding-left: 10px;
+	padding-right: 10px;
+	color: gray;
 }
 
 #messagesContainer {
 	width: 100%;
 	position: absolute;
-	top: 80px;
+	top: 121px;
 	bottom: 50px;
 	overflow: scroll;
 	font-family: inherit;

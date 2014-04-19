@@ -35,7 +35,6 @@ app.get('/:roomName', function(request, response) {
 	var name = request.params.roomName; // 'ABC123'
 	console.log('GET request for room ' + name);
 	response.render('room.html', {roomName: name});
-	// Return chatroom HTML...
 });
 
 // POST request for new Chatroom
@@ -82,6 +81,7 @@ io.sockets.on('connection', function(socket) {
     socket.on('nickname', function(nickname) {
     	console.log('Nickname changed from ' + socket.nickname + ' to ' + nickname);
         socket.nickname = nickname;
+        var roomName = socket.roomName;
         broadcastMembership(roomName);
     });
 
@@ -102,9 +102,19 @@ io.sockets.on('connection', function(socket) {
 		io.sockets.in(roomName).emit('message', nickname, message, convertTime(time));
     });
 
+    // Client typing
+    socket.on('startedTyping', function() {
+    	io.sockets.in(socket.roomName).emit('typingChanged', socket.nickname, 'start');
+    });
+
+    socket.on('stoppedTyping', function() {
+    	io.sockets.in(socket.roomName).emit('typingChanged', socket.nickname, 'stop');
+    });
+
     // Client disconnected / closed their browser window
     socket.on('disconnect', function() {
     	console.log(socket.nickname + ' left Room ' + socket.roomName);
+    	socket.leave(socket.roomName)
         broadcastMembership(socket.roomName);
     });
 });
@@ -166,7 +176,7 @@ function convertTime(millisecondsTime) {
 	var hours = givenTime.getHours();
 	var minutes = givenTime.getMinutes();
 
-	if (minutes < 9) {
+	if (minutes <= 9) {
 		minutes = '0' + minutes;
 	}
 
