@@ -66,7 +66,7 @@ $(document).ready(function() {
     });
 
     // Handle typing status changes
-    socket.on('typingChanged', function(name, change) {
+    socket.on('typingChanged', function(name, change, speed) {
     	if(name == nickname) return;
 
     	if(change == 'start') {
@@ -89,9 +89,9 @@ $(document).ready(function() {
     			typistsString = renderNames(typists) + ' are typing...';
     		}
     		$('#typing-members').html(typistsString);
-    		$('#typing-members').fadeIn('fast');
+    		$('#typing-members').fadeIn(speed);
     	} else {
-    		$('#typing-members').fadeOut('fast');
+    		$('#typing-members').fadeOut(speed);
     	}
     });
 
@@ -100,7 +100,7 @@ $(document).ready(function() {
     $("#messageField").keypress(function(){
     	socket.emit('startedTyping')
     	if(typingTimer != undefined) clearTimeout(typingTimer);
-    	typingTimer = setTimeout(function() {socket.emit('stoppedTyping')}, 1500);
+    	typingTimer = setTimeout(function() {socket.emit('stoppedTyping', 'fast')}, 1500);
     });
 });
 
@@ -163,7 +163,7 @@ function sendNewMessage(e) {
 	// Send it to the server
 	console.log('Emitting message: ' + message + ' ' + time);
 	socket.emit('message', message, time);
-	socket.emit('stoppedTyping');
+	socket.emit('stoppedTyping', 0);
 }
 
 function changeNickname(newNickname) {

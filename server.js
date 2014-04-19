@@ -104,11 +104,11 @@ io.sockets.on('connection', function(socket) {
 
     // Client typing
     socket.on('startedTyping', function() {
-    	io.sockets.in(socket.roomName).emit('typingChanged', socket.nickname, 'start');
+    	io.sockets.in(socket.roomName).emit('typingChanged', socket.nickname, 'start', 'fast');
     });
 
-    socket.on('stoppedTyping', function() {
-    	io.sockets.in(socket.roomName).emit('typingChanged', socket.nickname, 'stop');
+    socket.on('stoppedTyping', function(speed) {
+    	io.sockets.in(socket.roomName).emit('typingChanged', socket.nickname, 'stop', speed);
     });
 
     // Client disconnected / closed their browser window
