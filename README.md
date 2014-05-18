@@ -1,11 +1,11 @@
 Realtime
 ======
 
-A revolutionary new chatting experience.
+Realtime chatroom using socket.io.
 
 ##Workflow
 
-To start running Realtime, cd into it's root directory, and first run 'npm install' to install all the dependencies. Next, if the file chatroom.db already exists, delete it by running the command 'rm chatroom.db'. Finally, run 'node server.js' to run Realtime. Open a browser and navigate to http://localhost:8080/ to use Realtime.
+To start running Realtime, <code>cd</code> into it's root directory, and first run <code>npm install</code> to install all the dependencies. Next, if the file <code>chatroom.db</code> already exists, delete it by running the command <code>rm chatroom.db</code>. Finally, run <code>node server.js</code> to run Realtime. Open a browser and navigate to <code>http://localhost:8080/</code> to use Realtime.
 
 ##Features
 
